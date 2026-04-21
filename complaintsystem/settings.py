@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 import os
 ALLOWED_HOSTS = ['*']
+# Tell Django to trust your Render URL for forms
+CSRF_TRUSTED_ORIGINS = ['https://student-complaint-system-3uly.onrender.com']
 
 from pathlib import Path
 
