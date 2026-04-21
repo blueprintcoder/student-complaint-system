@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Register | ResolveX</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background: #0f172a;
+    color: white;
+    overflow: hidden;
+}
+
+/* ✨ ANIMATION */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* LEFT SIDE */
+.left {
+    flex: 1;
+    background: linear-gradient(135deg, #6366f1, #38bdf8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    text-align: center;
+    animation: float 6s ease-in-out infinite;
+}
+
+.logo-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.logo-icon {
+    width: 60px;
+    height: 60px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 22px;
+    transition: 0.3s;
+}
+
+.logo-icon:hover {
+    transform: rotate(10deg) scale(1.1);
+}
+
+.logo-text {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+/* RIGHT SIDE */
+.right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* FORM BOX */
+.box {
+    width: 380px;
+    padding: 30px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(15px);
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.1);
+    animation: slideIn 0.8s ease;
+    transition: 0.3s;
+}
+
+.box:hover {
+    transform: scale(1.02);
+}
+
+/* TITLE */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* INPUTS */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.08);
+    color: white;
+    transition: 0.3s;
+}
+
+input:focus {
+    outline: none;
+    box-shadow: 0 0 10px #38bdf8;
+    transform: scale(1.02);
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+    transition: 0.3s;
+}
+
+/* BUTTON GLOW EFFECT */
+button::after {
+    content: "";
+    position: absolute;
+    width: 0;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(255,255,255,0.2);
+    transition: 0.4s;
+}
+
+button:hover::after {
+    width: 100%;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+/* LINKS */
+.link {
+    text-align: center;
+    margin-top: 15px;
+    display: block;
+    color: #94a3b8;
+    transition: 0.3s;
+}
+
+.link:hover {
+    color: white;
+    letter-spacing: 0.5px;
+}
+
+/* ERROR */
+.error {
+    font-size: 12px;
+    color: #f87171;
+    margin-top: 5px;
+}
+
+/* ALERT */
+.alert {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 14px;
+    animation: slideIn 0.5s ease;
+}
+
+.success {
+    background: rgba(34,197,94,0.2);
+    border: 1px solid #22c55e;
+}
+
+.error-msg {
+    background: rgba(239,68,68,0.2);
+    border: 1px solid #ef4444;
+}
+
+/* FLOATING BACKGROUND EFFECT */
+body::before {
+    content: "";
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(56,189,248,0.3), transparent);
+    top: -100px;
+    left: -100px;
+    z-index: -1;
+    animation: float 8s infinite ease-in-out;
+}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+    body {
+        flex-direction: column;
+    }
+    .left {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- LEFT -->
+<div class="left">
+    <div class="logo-box">
+        <div class="logo-icon">RX</div>
+        <div class="logo-text">ResolveX</div>
+    </div>
+    <p>Create your account and manage complaints smartly</p>
+</div>
+
+<!-- RIGHT -->
+<div class="right">
+<div class="box">
+
+    <h2>Create Account</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST" onsubmit="return validatePassword()">
+        {% csrf_token %}
+
+        <input type="text" name="username" placeholder="Username"
+               value="{{ request.POST.username }}" required>
+
+        <input type="email" name="email" placeholder="Email"
+               value="{{ request.POST.email }}" required>
+
+        <input type="password" id="password" name="password" placeholder="Password" required>
+        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+
+        <div id="errorMsg" class="error"></div>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <a href="{% url 'signin' %}" class="link">
+        Already have an account? Login
+    </a>
+
+</div>
+</div>
+
+<script>
+function validatePassword() {
+    let pass = document.getElementById("password").value;
+    let confirm = document.getElementById("confirm_password").value;
+    let error = document.getElementById("errorMsg");
+
+    error.innerText = "";
+
+    if (pass !== confirm) {
+        error.innerText = "Passwords do not match";
+        return false;
+    }
+
+    if (pass.length < 6) {
+        error.innerText = "Minimum 6 characters required";
+        return false;
+    }
+
+    if (!/[A-Z]/.test(pass)) {
+        error.innerText = "Add at least one uppercase letter";
+        return false;
+    }
+
+    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(pass)) {
+        error.innerText = "Add at least one special character";
+        return false;
+    }
+
+    return true;
+}
+</script>
+
+</body>
+</html>

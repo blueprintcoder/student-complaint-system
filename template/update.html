@@ -1,0 +1,246 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Update Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #020617, #0f172a);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 40px;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.navbar a {
+    color: #38bdf8;
+    margin-left: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.navbar a:hover {
+    color: #22c55e;
+}
+
+/* CONTAINER */
+.container {
+    width: 460px;
+    margin: 60px auto;
+    padding: 35px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(25px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    animation: fadeUp 0.7s ease;
+    transition: transform 0.3s;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+}
+
+@keyframes fadeUp {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* TITLE */
+h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #38bdf8;
+    letter-spacing: 1px;
+}
+
+/* FLOATING INPUT */
+.form-group {
+    position: relative;
+    margin-bottom: 22px;
+}
+
+input, textarea, select {
+    width: 100%;
+    padding: 14px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56,189,248,0.4);
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #38bdf8, #22c55e);
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+    letter-spacing: 0.5px;
+}
+
+button:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 10px 25px rgba(56,189,248,0.4);
+}
+
+/* BACK LINK */
+.back-link {
+    text-align: center;
+    margin-top: 18px;
+}
+
+.back-link a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.back-link a:hover {
+    color: #38bdf8;
+}
+
+/* SMALL ANIMATION ON LOAD */
+.container * {
+    animation: fadeIn 0.8s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+<div class="logo">🔷 ResolveX</div>
+    <div>
+        <a href="{% url 'complaintreg' %}">Home</a>
+        <a href="{% url 'view_complaint' %}">Back</a>
+    </div>
+</div>
+
+<!-- FORM -->
+<div class="container">
+    <h2>Edit Complaint</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <input type="text" name="title" value="{{ complaint.title }}" required>
+        </div>
+
+        <div class="form-group">
+            <textarea name="description" required>{{ complaint.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <select name="department" id="department" required>
+                {% for dept in dept_classes.keys %}
+                <option value="{{ dept }}" {% if dept == complaint.department %}selected{% endif %}>
+                    {{ dept }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <select name="student_class" id="student_class" required></select>
+        </div>
+
+        <div class="form-group">
+            <select name="category" required>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if cat == complaint.category %}selected{% endif %}>
+                    {{ cat }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit">Update Complaint</button>
+    </form>
+
+    <div class="back-link">
+        <a href="{% url 'view_complaint' %}">← Back</a>
+    </div>
+</div>
+
+<!-- SAFE JSON -->
+{{ dept_classes|json_script:"dept-data" }}
+
+<script>
+const deptClasses = JSON.parse(document.getElementById('dept-data').textContent);
+
+const departmentSelect = document.getElementById("department");
+const classSelect = document.getElementById("student_class");
+
+let selectedClass = "{{ complaint.student_class }}";
+
+function loadClasses() {
+    const dept = departmentSelect.value;
+    const classes = deptClasses[dept] || [];
+
+    classSelect.innerHTML = "";
+
+    classes.forEach(cls => {
+        let option = document.createElement("option");
+        option.value = cls;
+        option.text = cls;
+
+        if (cls === selectedClass) {
+            option.selected = true;
+        }
+
+        classSelect.appendChild(option);
+    });
+}
+
+departmentSelect.addEventListener("change", function() {
+    selectedClass = "";
+    loadClasses();
+});
+
+loadClasses();
+</script>
+
+</body>
+</html>

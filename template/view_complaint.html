@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ResolveX | My Complaints</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #fff;
+    overflow-x: hidden;
+}
+
+/* ✨ Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(56,189,248,0.2); }
+    50% { box-shadow: 0 0 15px rgba(56,189,248,0.6); }
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    animation: fadeIn 0.6s ease;
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 600;
+    color: #38bdf8;
+}
+
+.nav-links a {
+    margin-left: 15px;
+    text-decoration: none;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.nav-links a:hover {
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+}
+
+.add-btn { background: #22c55e; }
+.logout-btn { background: #ef4444; }
+
+/* CONTAINER */
+.container {
+    width: 95%;
+    margin: 30px auto;
+    animation: fadeIn 0.8s ease;
+}
+
+/* CARD */
+.card {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(12px);
+    border-radius: 18px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+}
+
+/* TABLE */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* HEADER */
+th {
+    text-align: left;
+    padding: 14px;
+    font-weight: 500;
+    color: #94a3b8;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    position: sticky;
+    top: 0;
+    background: rgba(15,23,42,0.9);
+}
+
+/* ROW */
+td {
+    padding: 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* ✨ Row animation */
+tbody tr {
+    animation: fadeIn 0.5s ease;
+    transition: 0.3s;
+}
+
+tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+    transform: scale(1.01);
+}
+
+/* STATUS */
+.status {
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    animation: glow 2s infinite;
+}
+
+.pending {
+    background: #f59e0b;
+}
+
+.resolved {
+    background: #22c55e;
+}
+
+/* ACTION BUTTONS */
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    margin-right: 5px;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.edit {
+    background: #3b82f6;
+    color: #fff;
+}
+
+.delete {
+    background: #ef4444;
+    color: #fff;
+}
+
+.action-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(255,255,255,0.2);
+}
+
+/* EMPTY */
+.empty {
+    text-align: center;
+    padding: 20px;
+    color: #94a3b8;
+}
+
+/* SCROLL BAR */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #38bdf8;
+    border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">🔷 ResolveX</div>
+
+    <div class="nav-links">
+        <a href="{% url 'complaintreg' %}" class="add-btn">+ New Complaint</a>
+        <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+    </div>
+</div>
+
+<!-- CONTENT -->
+<div class="container">
+    <div class="card">
+
+        <table>
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Class</th>
+                    <th>Category</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% if complaint %}
+                {% for c in complaint %}
+                <tr>
+                    <td>{{ c.user.username|default:"Unknown" }}</td>
+                    <td>{{ c.title }}</td>
+                    <td>{{ c.description }}</td>
+                    <td>{{ c.student_class }}</td>
+                    <td>{{ c.category }}</td>
+
+                    <td>
+                        <span class="status {{ c.status|lower }}">
+                            {{ c.status }}
+                        </span>
+                    </td>
+
+                    <td>{{ c.created_at|date:"d M Y" }}</td>
+
+                    <td>
+                        <a href="{% url 'update' c.id %}" class="action-btn edit">Edit</a>
+                        <a href="{% url 'delete' c.id %}" class="action-btn delete"
+                           onclick="return confirm('Are you sure?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="8" class="empty">No complaints found 😔</td>
+                </tr>
+            {% endif %}
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+</body>
+</html>

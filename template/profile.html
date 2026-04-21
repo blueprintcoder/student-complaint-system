@@ -1,0 +1,236 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Profile | ResolveHub</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #0f172a;
+    color: #e5e7eb;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+    background: #111827;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 600;
+    color: #6366f1;
+}
+
+.nav-links a {
+    margin-left: 20px;
+    color: #e5e7eb;
+    text-decoration: none;
+}
+
+.nav-links a:hover {
+    color: #6366f1;
+}
+
+/* LAYOUT */
+.container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* CARD */
+.card {
+    background: #111827;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s ease;
+}
+
+/* FORM */
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 13px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: none;
+    margin-top: 5px;
+    background: #1f2937;
+    color: white;
+}
+
+/* BUTTONS */
+button {
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background: #6366f1;
+    color: white;
+}
+
+.btn-success {
+    background: #22c55e;
+    color: white;
+}
+
+.btn-danger {
+    background: #ef4444;
+    color: white;
+}
+
+/* DISABLE */
+.disabled input {
+    pointer-events: none;
+    background: #374151;
+}
+
+/* PASSWORD SECTION HIDDEN */
+.hidden {
+    display: none;
+}
+
+/* POPUP */
+.popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #22c55e;
+    padding: 12px 18px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: 0.4s;
+}
+
+.popup.show {
+    opacity: 1;
+}
+
+/* ANIMATION */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">ResolveX</div>
+    <div class="nav-links">
+        <a href="{% url 'complaintreg' %}">Home</a>
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </div>
+</div>
+
+<!-- POPUP -->
+{% if messages %}
+<div id="popup" class="popup">
+    {% for message in messages %}
+        {{ message }}
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="container">
+
+<div class="grid">
+
+<!-- PROFILE CARD -->
+<div class="card disabled" id="profileCard">
+    <h2>👤 Profile</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" name="username" value="{{ user.username }}">
+        </div>
+
+        <div class="form-group">
+            <label>Email</label>
+            <input type="email" name="email" value="{{ user.email }}">
+        </div>
+
+        <button type="button" class="btn-primary" onclick="enableEdit()">Update Info</button>
+        <button type="submit" class="btn-success hidden" id="saveBtn">Save</button>
+    </form>
+</div>
+
+<!-- PASSWORD CARD -->
+<div class="card">
+    <h2>🔐 Change Password</h2>
+
+    <form method="POST" action="{% url 'change_password' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" name="old_password" required>
+        </div>
+
+        <div class="form-group">
+            <label>New Password</label>
+            <input type="password" name="new_password" required>
+        </div>
+
+        <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password" required>
+        </div>
+
+        <button type="submit" class="btn-danger">Update Password</button>
+    </form>
+</div>
+
+</div>
+</div>
+
+<script>
+function enableEdit() {
+    document.getElementById("profileCard").classList.remove("disabled");
+    document.getElementById("saveBtn").classList.remove("hidden");
+}
+
+/* POPUP */
+window.onload = function() {
+    let popup = document.getElementById("popup");
+    if (popup) {
+        popup.classList.add("show");
+        setTimeout(() => popup.classList.remove("show"), 3000);
+    }
+}
+</script>
+
+</body>
+</html>
