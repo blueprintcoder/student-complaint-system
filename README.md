@@ -82,6 +82,6 @@ python manage.py runserver
 
 ## 👩‍💻 Author
 
-Harshali Kulkarni
+Vartika pandey
 
 
